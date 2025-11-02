@@ -1,10 +1,13 @@
+server:
+  port: 9000
+
 spring:
   application:
     name: api-gateway
   cloud:
     nacos:
       discovery:
-        server-addr: 110.40.135.216:8848
+        server-addr: localhost:8848
         username: nacos
         password: nacos
     gateway:
@@ -44,8 +47,7 @@ spring:
           filters:
             - RewritePath=^/mq/(.*)$, /$1
 
-server:
-  port: 9000
+
 
 management:
   endpoints:
