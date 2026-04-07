@@ -45,7 +45,7 @@ spring:
             - RewritePath=^/mq/(.*)$, /$1
 
 server:
-  port: 9000
+  port: 9900
 
 management:
   endpoints:
