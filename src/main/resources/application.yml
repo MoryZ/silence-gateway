@@ -1,3 +1,6 @@
+server:
+  port: 9900
+
 spring:
   application:
     name: api-gateway
@@ -10,23 +13,14 @@ spring:
     gateway:
       routes:
         # -------------------------- auth 服务路由（修复后）--------------------------
-        - id: auth-service-route
-          uri: lb://auth-service
+        - id: gate-service-route
+          uri: lb://gate-service
           predicates:
-            # 正确语法：/auth/** 表示“以 /auth 开头，后面跟任意路径”
-            # 可匹配：/auth/api/v1/login、/app/auth/api/v1/register（只要包含 /auth/ 且在路径中间/末尾）
-            - Path=/auth/**
+            # 匹配 /auth/** 或 /config/** 开头的请求
+            - Path=/auth/**, /config/**
           filters:
-            # 剔除 /auth 这1级前缀：/auth/api/v1/login → /api/v1/login（后端接收路径）
-            - RewritePath=^/auth/(.*)$, /$1
-
-        # -------------------------- config 服务路由（同理修复）--------------------------
-        - id: config-service-route
-          uri: lb://config-service
-          predicates:
-            - Path=/config/**
-          filters:
-            - RewritePath=^/config/(.*)$, /$1
+            # 动态剥离第一级路径（无论是 /auth 还是 /config）
+            - RewritePath=^/(?:auth|config)/(.*)$, /$1
 
         # -------------------------- job 服务路由（同理修复）--------------------------
         - id: job-service-route
@@ -43,9 +37,6 @@ spring:
             - Path=/mq/**
           filters:
             - RewritePath=^/mq/(.*)$, /$1
-
-server:
-  port: 9900
 
 management:
   endpoints:
